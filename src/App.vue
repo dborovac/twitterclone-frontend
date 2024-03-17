@@ -1,28 +1,40 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <b-navbar toggleable="md" type="dark" variant="info">
+            <b-container>
+                <b-navbar-brand to="/">Twitter Clone</b-navbar-brand>
+
+                <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+                <b-collapse id="nav-collapse" is-nav>
+                    <b-navbar-nav class="ml-auto">
+                        <b-nav-item v-if="isAuthenticated()" to="/profile">Profile</b-nav-item>
+                        <b-nav-item v-if="isAuthenticated()" @click="logout">Logout</b-nav-item>
+                    </b-navbar-nav>
+                </b-collapse>
+            </b-container>
+        </b-navbar>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { logout, isAuthenticated } from '@/auth';
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  methods: {
+    logout() {
+      logout();
+      this.$router.push({ name: 'Login' });
+    },
+    isAuthenticated() {
+      return isAuthenticated();
+    }
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+/* Add your custom styles here if needed */
 </style>
