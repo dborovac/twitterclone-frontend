@@ -13,7 +13,7 @@
                             </b-col>
                             <b-col md="6">
                                 <b-input-group prepend="@">
-                                    <b-form-input placeholder="Handle" v-model="handle" required></b-form-input>
+                                    <b-form-input placeholder="Handle" v-model="handle" required pattern="^[a-zA-Z0-9]*$" title="Handle must contain only letters and numbers"></b-form-input>
                                 </b-input-group>
                             </b-col>
                         </b-row>

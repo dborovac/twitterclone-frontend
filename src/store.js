@@ -5,15 +5,21 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    // Your state variables go here
+    profile: {}
   },
   mutations: {
-    // Your mutations go here
+    setProfile(state, profile) {
+      state.profile = profile;
+    }
   },
   actions: {
-    // Your actions go here
+    updateProfile({ commit }, profile) {
+      commit('setProfile', profile);
+    }
   },
-  modules: {
-    // Your modules go here
+  getters: {
+    getProfile: state => {
+      return state.profile;
+    }
   },
 });

@@ -1,12 +1,12 @@
 <template>
-	<b-card class="mb-2">
+	<b-card class="mb-2 mr-2">
 		<div class="d-flex flex-row mb-2">
 			<div>
 				<b-avatar size="md" variant="dark" rounded class="avatar-custom"></b-avatar>
 			</div>
 			<div class="ml-2">
 				<h6 class="m-0">{{ user.firstName }} {{ user.lastName }}</h6>
-				<p class="m-0">@{{ user.handle }}</p>
+				<p class="m-0 text-muted">@{{ user.handle }}</p>
 			</div>
 		</div>
 		<b-card-text>{{ tweet.content }}</b-card-text>

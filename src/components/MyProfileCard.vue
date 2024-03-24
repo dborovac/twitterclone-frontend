@@ -1,6 +1,6 @@
 <template>
     <b-container>
-        <b-card v-if="profile !== null">
+        <b-card v-if="profile !== undefined">
             <router-link to="/profile" style="text-decoration: none; color: inherit;">
                 <div class="d-flex flex-row mb-4">
                     <div>
@@ -8,7 +8,7 @@
                     </div>
                     <div class="ml-3">
                         <h5 class="m-0">{{ profile.firstName }} {{ profile.lastName }}</h5>
-                        <p class="m-0">@{{ profile.handle }}</p>
+                        <p class="m-0 text-muted">@{{ profile.handle }}</p>
                     </div>
                 </div>
             </router-link>
@@ -32,9 +32,9 @@ import gql from 'graphql-tag';
 
 export default {
     name: 'MyProfileCard',
-    data() {
-        return {
-            profile: null
+    computed: {
+        profile() {
+            return this.$store.getters.getProfile;
         }
     },
     methods: {
@@ -51,7 +51,7 @@ export default {
                     }
                 }
                 `
-            }).then(response => this.profile = response.data.getMyself);
+            }).then(response => this.$store.dispatch('updateProfile', response.data.getMyself));
         }
     },
     mounted() {

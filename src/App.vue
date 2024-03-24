@@ -28,9 +28,7 @@ export default {
 			logout();
 			this.$router.push({ name: 'Login' });
 		},
-		isAuthenticated() {
-			return isAuthenticated();
-		}
+		isAuthenticated
 	}
 }
 </script>

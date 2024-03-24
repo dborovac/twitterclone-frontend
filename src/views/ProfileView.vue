@@ -7,7 +7,7 @@
                 </b-col>
                 <b-col md="6">
                     <div v-for="(tweet, index) in tweets" :key="index">
-                        <SingleTweet :tweet="tweet" :user="{firstName: 'John', lastName: 'Smith', handle: 'smitthy1123'}" />
+                        <SingleTweet :tweet="tweet" :user="profile" />
                     </div>
                 </b-col>
             </b-row>
@@ -29,6 +29,11 @@ export default {
     data() {
         return {
             tweets: []
+        }
+    },
+    computed: {
+        profile() {
+            return this.$store.getters.getProfile;
         }
     },
     methods: {
