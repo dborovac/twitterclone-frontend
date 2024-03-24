@@ -2,29 +2,23 @@
     <div>
         <b-container class="mt-4">
             <b-row>
-                <b-col md="8" class="offset-md-2">
-                    <b-card>
+                <b-col md="4">
+                    <MyProfileCard />
+                </b-col>
+                <b-col md="6">
+                    <b-card class="mb-4">
                         <b-form @submit.prevent="postTweet">
-                            <b-form-group label="What's happening?" label-for="tweetText">
-                                <b-form-textarea id="tweetText" v-model="tweetText" rows="3" maxlength="280"
-                                    required></b-form-textarea>
+                            <b-form-group>
+                                <b-form-textarea id="tweetText" v-model="tweetText" placeholder="What's happening"
+                                    rows="3" maxlength="320" required></b-form-textarea>
                             </b-form-group>
-                            <b-button type="submit" variant="info">Tweet</b-button>
+                            <b-button type="submit" variant="dark">Tweet</b-button>
+                            <small class="text-muted ml-3">{{ tweetText.length }}/320</small>
                         </b-form>
                     </b-card>
-                </b-col>
-            </b-row>
-        </b-container>
-
-        <b-container class="mt-4">
-            <b-row>
-                <b-col md="8" class="offset-md-2">
-                    <b-card v-for="(tweet, index) in tweets" :key="index" class="mb-2">
-                        <b-card-text>{{ tweet.content }}</b-card-text>
-                        <b-card-footer>
-                            <small class="text-muted">Posted by *MYSELF* on {{ tweet.postedAt }}</small>
-                        </b-card-footer>
-                    </b-card>
+                    <div v-for="(tweet, index) in tweets" :key="index">
+                        <SingleTweet :tweet="tweet" />
+                    </div>
                 </b-col>
             </b-row>
         </b-container>
@@ -33,8 +27,15 @@
 
 <script>
 import gql from 'graphql-tag';
+import MyProfileCard from '@/components/MyProfileCard.vue';
+import SingleTweet from '@/components/SingleTweet.vue';
 
 export default {
+    name: 'HomeView',
+    components: {
+        MyProfileCard,
+        SingleTweet
+    },
     data() {
         return {
             tweetText: '',
@@ -55,11 +56,6 @@ export default {
                     request: {
                         content: this.tweetText
                     }
-                },
-                context: {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
                 }
             }).then(() => {
                 this.fetchTweets();
@@ -74,12 +70,7 @@ export default {
                             postedAt
                         }
                     }
-                `,
-                context: {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                }
+                `
             }).then(response => {
                 this.tweets = response.data.getMyTweets;
             })
@@ -90,5 +81,3 @@ export default {
     }
 };
 </script>
-
-<style scoped></style>

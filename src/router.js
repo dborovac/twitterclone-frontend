@@ -3,6 +3,9 @@ import VueRouter from 'vue-router';
 import LoginView from './views/LoginView.vue';
 import HomeView from './views/HomeView.vue';
 import ProfileView from './views/ProfileView.vue';
+import RegisterView from './views/RegisterView.vue';
+import SuccessfulRegistrationView from './views/SuccessfulRegistrationView.vue';
+
 import { isAuthenticated } from './auth';
 
 Vue.use(VueRouter);
@@ -23,7 +26,20 @@ const routes = [
   {
     path: '/profile',
     name: 'Profile',
-    component: ProfileView
+    component: ProfileView,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegisterView
+  },
+  {
+    path: '/register/thank-you',
+    name: 'SuccessfulRegistration',
+    component: SuccessfulRegistrationView
   }
 ];
 
