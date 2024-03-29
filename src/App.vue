@@ -26,6 +26,7 @@ export default {
 	methods: {
 		logout() {
 			logout();
+			this.$apollo.provider.defaultClient.clearStore();
 			this.$router.push({ name: 'Login' });
 		},
 		isAuthenticated

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@vue/composition-api": "^1.7.2",
+    "@vue/runtime-dom": "^3.4.21",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",
     "apollo-link-context": "^1.0.20",
@@ -16,10 +17,12 @@
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.8.3",
+    "floating-vue": "^1.0.0-beta.19",
     "graphql": "^15.8.0",
     "oh-vue-icons": "^1.0.0-rc3",
     "vue": "^2.6.14",
     "vue-apollo": "^3.1.2",
+    "vue-mention": "^1.0.0-floating-vue1",
     "vue-router": "^3.5.2",
     "vuex": "^3.6.2"
   },
