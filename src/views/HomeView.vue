@@ -113,6 +113,26 @@ const SEARCH_USERS_BY_HANDLE_QUERY = gql`
     }
 `;
 
+const GET_MY_PROFILE_QUERY = gql`
+    query GetMyself {
+        getMyself {
+            id
+            email
+            firstName
+            lastName
+            handle
+            followers {
+                id
+                handle
+            }
+            followees {
+                id
+                handle
+            }
+        }
+    }
+`
+
 export default {
     name: 'HomeView',
     components: {
@@ -167,26 +187,8 @@ export default {
             }).then(() => this.tweetText = '')
         },
         async fetchMyProfile() {
-            await this.$apollo.provider.defaultClient.query({
-                query: gql`
-                    query GetMyself {
-                        getMyself {
-                            id
-                            email
-                            firstName
-                            lastName
-                            handle
-                            followers {
-                                id
-                                handle
-                            }
-                            followees {
-                                id
-                                handle
-                            }
-                        }
-                    }
-                `
+            await this.$apollo.query({
+                query: GET_MY_PROFILE_QUERY
             }).then(response => this.$store.dispatch('updateProfile', response.data.getMyself));
         },
         async searchHandles(searchText) {

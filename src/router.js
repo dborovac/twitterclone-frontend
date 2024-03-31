@@ -69,8 +69,4 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-router.onReady(() => {
-  console.log(this)
-});
-
 export default router;
