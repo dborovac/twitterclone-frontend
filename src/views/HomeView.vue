@@ -2,17 +2,15 @@
     <div>
         <b-container class="mt-4">
             <b-row>
-                <b-col md="4">
-                    <MyProfileCard />
+                <b-col md="5">
+                    <ProfileCard :user="profile" />
                 </b-col>
                 <b-col md="7">
                     <b-card class="mb-4">
                         <b-form @submit.prevent="postTweet">
                             <b-form-group>
-                                <Mentionable :keys="['@']" :items="mentionableUsers" @apply="onApply($event)" @search="searchHandles($event)"
-                                    offset="6" insert-space filtering-disabled>
-                                    <b-form-textarea id="tweetText" v-model="tweetText" placeholder="What's happening"
-                                        rows="3" maxlength="320" spellcheck="false" required></b-form-textarea>
+                                <Mentionable :keys="['@']" :items="mentionableUsers" @search="searchHandles($event)" offset="6" insert-space filtering-disabled>
+                                    <b-form-textarea id="tweetText" v-model="tweetText" placeholder="What's happening" rows="3" maxlength="320" spellcheck="false" required></b-form-textarea>
                                     <template #item-@="{ item }">
                                         <div class="d-flex flex-row p-1">
                                             <div>
@@ -43,8 +41,7 @@
                     <template v-else>
                         <div class="tweets-container mb-5">
                             <div v-for="tweet in tweets" :key="tweet.id">
-                                <SingleTweet :tweet="tweet"
-                                    :user="{ firstName: 'John', lastName: 'Smith', handle: 'smitthy1123' }" />
+                                <SingleTweet :tweet="tweet" :user="tweet.user" />
                             </div>
                         </div>
                     </template>
@@ -56,16 +53,28 @@
 
 <script>
 import gql from 'graphql-tag';
-import MyProfileCard from '@/components/MyProfileCard.vue';
+import ProfileCard from '@/components/ProfileCard.vue';
 import SingleTweet from '@/components/SingleTweet.vue';
 import { Mentionable } from 'vue-mention';
 
 const GET_TWEETS_QUERY = gql`
-    query GetMyTweets {
-        tweets: getMyTweets {
+    query FolloweeTweets {
+        tweets: followeeTweets {
             id
             content
             postedAt
+            user {
+                id
+                handle
+                firstName
+                lastName
+            }
+            mentions {
+                id
+                handle
+                firstName
+                lastName
+            }
         }
     }
 `;
@@ -76,6 +85,18 @@ const POST_TWEET_MUTATION = gql`
             id
             content
             postedAt
+            user {
+                id
+                handle
+                firstName
+                lastName
+            }
+            mentions {
+                id
+                handle
+                firstName
+                lastName
+            }
         }
     }
 `;
@@ -95,9 +116,14 @@ const SEARCH_USERS_BY_HANDLE_QUERY = gql`
 export default {
     name: 'HomeView',
     components: {
-        MyProfileCard,
+        ProfileCard,
         SingleTweet,
         Mentionable
+    },
+    computed: {
+        profile() {
+            return this.$store.getters.getProfile;
+        }
     },
     data() {
         return {
@@ -140,16 +166,37 @@ export default {
                 }
             }).then(() => this.tweetText = '')
         },
+        async fetchMyProfile() {
+            await this.$apollo.provider.defaultClient.query({
+                query: gql`
+                    query GetMyself {
+                        getMyself {
+                            id
+                            email
+                            firstName
+                            lastName
+                            handle
+                            followers {
+                                id
+                                handle
+                            }
+                            followees {
+                                id
+                                handle
+                            }
+                        }
+                    }
+                `
+            }).then(response => this.$store.dispatch('updateProfile', response.data.getMyself));
+        },
         async searchHandles(searchText) {
             this.loadingMentionableUsers = true;
             await this.queryUsersByHandle(searchText);
             this.loadingMentionableUsers = false;
-        },
-        onApply(mention) {
-            const fullMention = '@' + mention.key;
-            const newTweetText = this.tweetText.replace(fullMention, '<span style="color: red;">' + fullMention + '</span>');
-            this.tweetText = newTweetText;
         }
+    },
+    mounted() {
+        this.fetchMyProfile();
     }
 };
 </script>

@@ -42,12 +42,12 @@ export default {
 		async login() {
 			await this.$apollo.provider.defaultClient.mutate({
 				mutation: gql`
-          mutation Login($request: LoginRequest!) {
-            login(request: $request) {
-              token
-            }
-          }
-        `,
+          		mutation Login($request: LoginRequest!) {
+            		login(request: $request) {
+              			token
+            		}
+          		}
+        		`,
 				variables: {
 					request: {
 						email: this.email,
@@ -57,9 +57,8 @@ export default {
 			}).then(response => {
 				login(response.data.login.token);
 				this.$router.push({ path: '/' });
-			}
-			)
-		},
+			});
+		}
 	},
 };
 </script>

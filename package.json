@@ -24,7 +24,8 @@
     "vue-apollo": "^3.1.2",
     "vue-mention": "^1.0.0-floating-vue1",
     "vue-router": "^3.5.2",
-    "vuex": "^3.6.2"
+    "vuex": "^3.6.2",
+    "vuex-extensions": "^1.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

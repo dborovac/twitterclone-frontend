@@ -2,12 +2,12 @@
     <div>
         <b-container class="mt-4">
             <b-row>
-                <b-col md="4">
-                    <MyProfileCard />
+                <b-col md="5">
+                    <ProfileCard :user="user" />
                 </b-col>
-                <b-col md="6">
-                    <div v-for="(tweet, index) in tweets" :key="index">
-                        <SingleTweet :tweet="tweet" :user="profile" />
+                <b-col md="7">
+                    <div v-for="tweet in tweets" :key="tweet.id">
+                        <SingleTweet :tweet="tweet" :user="user" />
                     </div>
                 </b-col>
             </b-row>
@@ -17,43 +17,71 @@
 
 <script>
 import gql from 'graphql-tag';
-import MyProfileCard from '@/components/MyProfileCard.vue';
+import ProfileCard from '@/components/ProfileCard.vue';
 import SingleTweet from '@/components/SingleTweet.vue';
+
+const GET_USER_QUERY = gql`
+    query GetUserById($userId: String!) {
+        getUserById(userId: $userId) {
+            id
+            email
+            firstName
+            lastName
+            handle
+            birthday
+            followers {
+                id
+                handle
+            }
+            followees {
+                id
+                handle
+            }
+            tweets {
+                id
+                content
+                postedAt
+                mentions {
+                    id
+                    handle
+                }
+            }
+        }
+    }
+`;
 
 export default {
     name: 'ProfileView',
     components: {
-        MyProfileCard,
+        ProfileCard,
         SingleTweet
     },
     data() {
         return {
-            tweets: []
-        }
-    },
-    computed: {
-        profile() {
-            return this.$store.getters.getProfile;
+            tweets: [],
+            user: {}
         }
     },
     methods: {
-        async getMyTweets() {
-            await this.$apollo.provider.defaultClient.query({
-                query: gql`
-                    query GetMyTweets {
-                        getMyTweets {
-                            content
-                            postedAt
-                        }
-                    }
-                `
+        async getUserById() {
+            await this.$apollo.query({
+                query: GET_USER_QUERY,
+                variables: {
+                    userId: this.$route.params.id
+                }
             }).then(response => {
-                this.tweets = response.data.getMyTweets;
-            })
+                this.user = response.data.getUserById;
+                this.tweets = this.user.tweets;
+            });
+        }
+    },
+    watch: {
+        $route: function() {
+            this.getUserById();
         }
     },
     mounted() {
-        this.getMyTweets();
+        this.getUserById();
     }
 }
 </script>

@@ -8,7 +8,7 @@
 
 				<b-collapse id="nav-collapse" is-nav>
 					<b-navbar-nav class="ml-auto">
-						<b-nav-item v-if="isAuthenticated()" to="/profile">Profile</b-nav-item>
+						<b-nav-item v-if="isAuthenticated()" to="/profile/me">Profile</b-nav-item>
 						<b-nav-item v-if="isAuthenticated()" @click="logout">Logout</b-nav-item>
 					</b-navbar-nav>
 				</b-collapse>
@@ -27,6 +27,7 @@ export default {
 		logout() {
 			logout();
 			this.$apollo.provider.defaultClient.clearStore();
+			this.$store.reset();
 			this.$router.push({ name: 'Login' });
 		},
 		isAuthenticated

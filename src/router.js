@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import LoginView from './views/LoginView.vue';
 import HomeView from './views/HomeView.vue';
+import MyProfileView from './views/MyProfileView.vue';
 import ProfileView from './views/ProfileView.vue';
 import RegisterView from './views/RegisterView.vue';
 import SuccessfulRegistrationView from './views/SuccessfulRegistrationView.vue';
@@ -24,7 +25,15 @@ const routes = [
     component: LoginView
   },
   {
-    path: '/profile',
+    path: '/profile/me',
+    name: 'MyProfile',
+    component: MyProfileView,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/profile/:id',
     name: 'Profile',
     component: ProfileView,
     meta: {
@@ -58,6 +67,10 @@ router.beforeEach((to, from, next) => {
   } else {
     next();
   }
+});
+
+router.onReady(() => {
+  console.log(this)
 });
 
 export default router;
