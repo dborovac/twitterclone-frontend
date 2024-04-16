@@ -19,9 +19,9 @@
                     </div>
                 </div>
                 <div v-if="user.handle !== profile.handle" class="flex-column ml-auto">
-                    <b-button v-if="profile.followees.find(obj => obj.id === user.id)" 
+                    <b-button v-if="profile.followees.find(obj => obj.id === user.id)"
                         pill :variant="getAttributeBasedOnHover().variant"
-                        @mouseover="isHovered = true" 
+                        @mouseover="isHovered = true"
                         @mouseleave="isHovered = false">{{ getAttributeBasedOnHover().text }}</b-button>
                     <b-button v-else @click="onFollow(user.id)" pill variant="info">Follow</b-button>
                 </div>

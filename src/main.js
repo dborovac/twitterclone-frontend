@@ -22,7 +22,7 @@ const authLink = setContext((_, { headers }) => {
       }
   }
 });
-const apolloClient = new ApolloClient({
+export const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
@@ -42,8 +42,8 @@ import * as FaIcons from "oh-vue-icons/icons/fa";
 import * as BiIcons from "oh-vue-icons/icons/bi";
 import * as HiIcons from "oh-vue-icons/icons/hi";
 const Fa = Object.values({ ...FaIcons });
-const Bi = Object.values({ ...BiIcons});
-const Hi = Object.values({ ...HiIcons});
+const Bi = Object.values({ ...BiIcons });
+const Hi = Object.values({ ...HiIcons });
 addIcons(...Fa);
 addIcons(...Bi);
 addIcons(...Hi);
@@ -51,6 +51,10 @@ Vue.component("v-icon", OhVueIcon);
 
 // floating-vue
 import 'floating-vue/dist/style.css'
+
+// Infinite scroll
+import infiniteScroll from 'vue-infinite-scroll';
+Vue.use(infiniteScroll);
 
 new Vue({
   apolloProvider,

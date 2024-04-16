@@ -6,6 +6,9 @@ import MyProfileView from './views/MyProfileView.vue';
 import ProfileView from './views/ProfileView.vue';
 import RegisterView from './views/RegisterView.vue';
 import SuccessfulRegistrationView from './views/SuccessfulRegistrationView.vue';
+import { apolloClient } from './main.js';
+import store from './store';
+import gql from 'graphql-tag';
 
 import { isAuthenticated } from './auth';
 
@@ -68,5 +71,31 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
+
+const GET_MY_PROFILE_QUERY = gql`
+    query GetMyself {
+        getMyself {
+            id
+            email
+            firstName
+            lastName
+            handle
+            followers {
+                id
+                handle
+            }
+            followees {
+                id
+                handle
+            }
+        }
+    }
+`;
+
+router.onReady(async () => {
+  await apolloClient.query({
+    query: GET_MY_PROFILE_QUERY
+  }).then(response => store.dispatch('updateProfile', response.data.getMyself));
+})
 
 export default router;
