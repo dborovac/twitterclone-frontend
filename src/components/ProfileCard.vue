@@ -21,6 +21,7 @@
                 <div v-if="user.handle !== profile.handle" class="flex-column ml-auto">
                     <b-button v-if="profile.followees.find(obj => obj.id === user.id)"
                         pill :variant="getAttributeBasedOnHover().variant"
+                        @click="onUnfollow(user.id)"
                         @mouseover="isHovered = true"
                         @mouseleave="isHovered = false">{{ getAttributeBasedOnHover().text }}</b-button>
                     <b-button v-else @click="onFollow(user.id)" pill variant="info">Follow</b-button>
@@ -43,11 +44,26 @@
 
 <script>
 import gql from 'graphql-tag';
+import { GET_USER_QUERY } from '@/iam-queries';
 
 const FOLLOW_MUTATION = gql`
     mutation Follow($userId: String!) {
         follow(userId: $userId) {
-            success
+            followers {
+                id
+                handle
+            }
+        }
+    }
+`;
+
+const UNFOLLOW_MUTATION = gql`
+    mutation Unfollow($userId: String!) {
+        unfollow(userId: $userId) {
+            followers {
+                id
+                handle
+            }
         }
     }
 `;
@@ -73,6 +89,22 @@ export default {
                 mutation: FOLLOW_MUTATION,
                 variables: {
                     userId: userId
+                },
+                update: (store, { data: { follow } }) => {
+                    let data = store.readQuery({ query: GET_USER_QUERY, variables: { userId: userId } });
+                    data.getUserById.followers = follow.followers;
+                }
+            });
+        },
+        onUnfollow(userId) {
+            this.$apollo.mutate({
+                mutation: UNFOLLOW_MUTATION,
+                variables: {
+                    userId: userId
+                },
+                update: (store, { data: { unfollow } }) => {
+                    let data = store.readQuery({ query: GET_USER_QUERY, variables: { userId: userId } });
+                    data.getUserById.followers = unfollow.followers;
                 }
             });
         },

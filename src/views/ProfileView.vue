@@ -16,39 +16,9 @@
 </template>
 
 <script>
-import gql from 'graphql-tag';
 import ProfileCard from '@/components/ProfileCard.vue';
 import SingleTweet from '@/components/SingleTweet.vue';
-
-const GET_USER_QUERY = gql`
-    query GetUserById($userId: String!) {
-        getUserById(userId: $userId) {
-            id
-            email
-            firstName
-            lastName
-            handle
-            birthday
-            followers {
-                id
-                handle
-            }
-            followees {
-                id
-                handle
-            }
-            tweets {
-                id
-                content
-                postedAt
-                mentions {
-                    id
-                    handle
-                }
-            }
-        }
-    }
-`;
+import { GET_USER_QUERY } from '@/iam-queries';
 
 export default {
     name: 'ProfileView',

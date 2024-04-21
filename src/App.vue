@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<b-navbar toggleable="lg" type="dark" variant="info">
+		<b-navbar toggleable="lg" type="dark" variant="info" style="position: sticky; top: 0; z-index: 1000;">
 			<b-container>
 				<b-navbar-brand to="/">Twitter Clone</b-navbar-brand>
 
@@ -8,21 +8,29 @@
 
 				<b-collapse id="nav-collapse" is-nav>
 					<b-navbar-nav class="ml-auto">
-						<b-nav-form>
-							<!-- <vue-bootstrap-autocomplete
-								class="mr-sm-2"
-								v-model="searchUsersText"
-								:ieCloseFix="false"
-								:data="searchedUsers"
-								@hit="selectedUser = $event"
-								placeholder="Search users"
-								@input="search">
-							</vue-bootstrap-autocomplete> -->
-							<!-- <b-form-input v-if="isAuthenticated()" v-model="searchUsersText" @input="search"
-								style="width: 15rem" size="sm" class="mr-sm-2"
-								placeholder="Search users"></b-form-input> -->
+						<b-nav-form v-if="isAuthenticated()">
+							<vue-bootstrap-typeahead
+								ref="usersTypeahead"
+								:data="users"
+								v-model="searchQuery"
+								:serializer="u => u.handle"
+								placeholder="Find people you know"
+								prepend="@"
+								@hit="onHit($event)">
+								<template slot="suggestion" slot-scope="{ htmlText, data }">
+									<div class="d-flex flex-row p-1">
+										<div>
+											<b-avatar size="md" variant="dark" rounded class="avatar-custom"></b-avatar>
+										</div>
+										<div class="ml-2">
+											<h6 class="m-0">{{ data.firstName + ' ' + data.lastName }}</h6>
+											<p class="m-0" v-html="htmlText"></p>
+										</div>
+									</div>
+								</template>
+							</vue-bootstrap-typeahead>
 						</b-nav-form>
-						<b-nav-item v-if="isAuthenticated()" to="/profile/me">My profile</b-nav-item>
+						<b-nav-item v-if="isAuthenticated()" class="ml-3" to="/profile/me">My profile</b-nav-item>
 						<b-nav-item v-if="isAuthenticated()" @click="logout">Logout</b-nav-item>
 					</b-navbar-nav>
 				</b-collapse>
@@ -42,6 +50,7 @@
 <script>
 import { logout, isAuthenticated } from '@/auth';
 import gql from 'graphql-tag';
+import _ from 'underscore';
 
 const SEARCH_USERS_QUERY = gql`
 	query SearchUsers($searchQuery: String!) {
@@ -60,32 +69,34 @@ export default {
 	name: 'App',
 	data() {
 		return {
-			searchUsersText: '',
-			searchedUsers: [],
-			searchedUsersPopup: false,
-			selectedUser: {}
+			users: [],
+			searchQuery: '',
+			selectedUser: null
 		}
 	},
 	methods: {
+		isAuthenticated,
 		logout() {
 			logout();
 			this.$apollo.provider.defaultClient.clearStore();
 			this.$store.reset();
 			this.$router.push({ name: 'Login' });
 		},
-		isAuthenticated,
-		search() {
-			this.$apollo.provider.defaultClient.query({
+		searchUsers(searchQuery) {
+			this.$apollo.query({
 				query: SEARCH_USERS_QUERY,
 				variables: {
-					searchQuery: this.searchUsersText
+					searchQuery: searchQuery
 				}
-			}
-			).then(response => {
-				this.searchedUsers = response.data.searchUsers;
-				this.searchedUsersPopup = true;
-			});
+			}).then(response => this.users = response.data.searchUsers);
+		},
+		onHit(user) {
+			this.$router.push({ name: 'Profile', params: { id: user.id } });
+			this.$refs.usersTypeahead.inputValue = '';
 		}
+	},
+	watch: {
+		searchQuery: _.debounce(function(val) { this.searchUsers(val) }, 500)
 	}
 }
 </script>

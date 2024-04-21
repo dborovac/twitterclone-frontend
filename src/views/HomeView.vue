@@ -10,28 +10,30 @@
                         <PostTweetForm />
                     </b-card>
 
-                    <b-card title="Tweets card" no-body>
+                    <b-card title="Tweets card" class="mb-5" no-body>
                         <b-card-header header-tag="nav">
                             <b-nav card-header tabs v-model="activeTab">
-                                <b-nav-item :eventKey="1" @click="activeTab = 1" :active="activeTab === 1 ? true : false">Following</b-nav-item>
-                                <b-nav-item :eventKey="2" @click="activeTab = 2" :active="activeTab === 2 ? true : false">My tweets</b-nav-item>
+                                <b-nav-item :eventKey="1" @click="activeTab = 1" :active="activeTab === 1">Following</b-nav-item>
+                                <b-nav-item :eventKey="2" @click="activeTab = 2" :active="activeTab === 2">My tweets</b-nav-item>
                             </b-nav>
                         </b-card-header>
 
-                        <b-card-body v-if="activeTab === 1" class="mb-4">
-                            <div class="tweets-container mb-5" v-infinite-scroll="showMoreFolloweeTweets" infinite-scroll-immediate-check="false">
+                        <b-card-body v-if="activeTab === 1">
+                            <div class="tweets-container" v-infinite-scroll="onScrolledToBottom" infinite-scroll-immediate-check="false">
                                 <div v-for="tweet in followeeTweets" :key="tweet.id">
                                     <SingleTweet :tweet="tweet" :user="tweet.postedBy" />
                                 </div>
                             </div>
+                            <div class="text-center" v-if="followeeTweets.length === 0">Nothing here</div>
                         </b-card-body>
 
-                        <b-card-body v-if="activeTab === 2" class="mb-4">
-                            <div class="tweets-container mb-5">
+                        <b-card-body v-if="activeTab === 2">
+                            <div class="tweets-container">
                                 <div v-for="tweet in myTweets" :key="tweet.id">
                                     <SingleTweet :tweet="tweet" :user="tweet.postedBy" />
                                 </div>
                             </div>
+                            <div class="text-center" v-if="myTweets.length === 0">Nothing here</div>
                         </b-card-body>
                     </b-card>
                 </b-col>
@@ -88,7 +90,7 @@ const GET_MY_PROFILE_QUERY = gql`
     }
 `;
 
-const GET_MY_TWEETS_QUERY = gql`
+export const GET_MY_TWEETS_QUERY = gql`
     query GetMyTweets {
         myTweets {
             id
@@ -114,8 +116,8 @@ export default {
     name: 'HomeView',
     components: {
         ProfileCard,
-        SingleTweet,
-        PostTweetForm
+        PostTweetForm,
+        SingleTweet
     },
     computed: {
         profile() {
@@ -143,7 +145,7 @@ export default {
                 query: GET_MY_PROFILE_QUERY
             }).then(response => this.$store.dispatch('updateProfile', response.data.getMyself));
         },
-        showMoreFolloweeTweets() {
+        onScrolledToBottom() {
             this.$apollo.queries.followeeTweets.fetchMore({
                 variables: {
                     cursorTimestamp: this.followeeTweets.slice(-1)[0].postedAt

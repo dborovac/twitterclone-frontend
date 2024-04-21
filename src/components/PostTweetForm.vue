@@ -1,7 +1,7 @@
 <template>
     <b-form @submit.prevent="postTweet">
         <b-form-group>
-            <Mentionable :keys="['@']" :items="mentionableUsers" @search="searchHandles($event)" offset="6" insert-space>
+            <VueMentionable :keys="['@']" :items="mentionableUsers" @search="searchHandles($event)" offset="6" insert-space>
                 <b-form-textarea id="tweetText" v-model="tweetText" placeholder="What's happening" rows="3" maxlength="320" spellcheck="false" required></b-form-textarea>
                 <template #item-@="{ item }">
                     <div class="d-flex flex-row p-1">
@@ -19,7 +19,7 @@
                         {{ loadingMentionableUsers ? 'Loading...' : 'No result' }}
                     </div>
                 </template>
-            </Mentionable>
+            </VueMentionable>
         </b-form-group>
         <b-button type="submit" variant="dark">Tweet</b-button>
         <small class="text-muted ml-3">{{ tweetText.length }}/320</small>
@@ -27,8 +27,8 @@
 </template>
 
 <script>
-import { Mentionable } from 'vue-mention';
 import gql from 'graphql-tag';
+import { GET_MY_TWEETS_QUERY } from '@/views/HomeView.vue';
 
 const POST_TWEET_MUTATION = gql`
     mutation PostTweet($content: String!) {
@@ -64,33 +64,8 @@ const SEARCH_USERS_BY_HANDLE_QUERY = gql`
     }
   `;
 
-  const GET_MY_TWEETS_QUERY = gql`
-    query GetMyTweets {
-        tweets: myTweets {
-            id
-            content
-            postedAt
-            postedBy {
-                id
-                handle
-                firstName
-                lastName
-            }
-            mentions {
-                id
-                handle
-                firstName
-                lastName
-            }
-        }
-    }
-`;
-
 export default {
     name: 'PostTweetForm',
-    components: {
-        Mentionable
-    },
     data() {
         return {
             tweetText: '',
@@ -117,9 +92,9 @@ export default {
                     let data = store.readQuery({ query: GET_MY_TWEETS_QUERY });
                     data = {
                         ...data,
-                        tweets: [
+                        myTweets: [
                             postTweet,
-                            ...data.tweets
+                            ...data.myTweets
                         ]
                     };
                     store.writeQuery({ query: GET_MY_TWEETS_QUERY, data });

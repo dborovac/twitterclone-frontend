@@ -56,6 +56,14 @@ import 'floating-vue/dist/style.css'
 import infiniteScroll from 'vue-infinite-scroll';
 Vue.use(infiniteScroll);
 
+// Mentionable
+import { Mentionable } from 'vue-mention';
+Vue.component("VueMentionable", Mentionable);
+
+// vue-bootstrap-typeahead
+import VueBootstrapTypeahead from 'vue-bootstrap-typeahead';
+Vue.component('vue-bootstrap-typeahead', VueBootstrapTypeahead);
+
 new Vue({
   apolloProvider,
   router,
