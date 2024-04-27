@@ -3,7 +3,8 @@
         <b-container class="mt-4">
             <b-row>
                 <b-col md="5">
-                    <ProfileCard :user="profile" />
+                    <ProfileCard class="mb-4" :user="myProfile" />
+                    <TrendingTopics />
                 </b-col>
                 <b-col md="7">
                     <b-card class="mb-4">
@@ -13,15 +14,15 @@
                     <b-card title="Tweets card" class="mb-5" no-body>
                         <b-card-header header-tag="nav">
                             <b-nav card-header tabs v-model="activeTab">
-                                <b-nav-item :eventKey="1" @click="activeTab = 1" :active="activeTab === 1">Following</b-nav-item>
-                                <b-nav-item :eventKey="2" @click="activeTab = 2" :active="activeTab === 2">My tweets</b-nav-item>
+                                <b-nav-item :eventKey="1" @click="activeTab = 1" :active="activeTab === 1"><span style="color: #212529">Following</span></b-nav-item>
+                                <b-nav-item :eventKey="2" @click="activeTab = 2" :active="activeTab === 2"><span style="color: #212529">My tweets</span></b-nav-item>
                             </b-nav>
                         </b-card-header>
 
                         <b-card-body v-if="activeTab === 1">
                             <div class="tweets-container" v-infinite-scroll="onScrolledToBottom" infinite-scroll-immediate-check="false">
                                 <div v-for="tweet in followeeTweets" :key="tweet.id">
-                                    <SingleTweet :tweet="tweet" :user="tweet.postedBy" />
+                                    <SingleTweet :tweet="tweet" />
                                 </div>
                             </div>
                             <div class="text-center" v-if="followeeTweets.length === 0">Nothing here</div>
@@ -29,11 +30,11 @@
 
                         <b-card-body v-if="activeTab === 2">
                             <div class="tweets-container">
-                                <div v-for="tweet in myTweets" :key="tweet.id">
-                                    <SingleTweet :tweet="tweet" :user="tweet.postedBy" />
+                                <div v-for="tweet in myProfile.tweets" :key="tweet.id">
+                                    <SingleTweet :tweet="tweet" />
                                 </div>
                             </div>
-                            <div class="text-center" v-if="myTweets.length === 0">Nothing here</div>
+                            <div class="text-center" v-if="myProfile.tweets.length === 0">Nothing here</div>
                         </b-card-body>
                     </b-card>
                 </b-col>
@@ -43,91 +44,14 @@
 </template>
 
 <script>
-import gql from 'graphql-tag';
-import ProfileCard from '@/components/ProfileCard.vue';
-import SingleTweet from '@/components/SingleTweet.vue';
-import PostTweetForm from '@/components/PostTweetForm.vue';
-
-const GET_FOLLOWEE_TWEETS_QUERY = gql`
-    query FolloweeTweets($cursorTimestamp: String) {
-        followeeTweets(cursorTimestamp: $cursorTimestamp) {
-            id
-            content
-            postedAt
-            postedBy {
-                id
-                handle
-                firstName
-                lastName
-            }
-            mentions {
-                id
-                handle
-                firstName
-                lastName
-            }
-        }
-    }
-`;
-
-const GET_MY_PROFILE_QUERY = gql`
-    query GetMyself {
-        getMyself {
-            id
-            email
-            firstName
-            lastName
-            handle
-            followers {
-                id
-                handle
-            }
-            followees {
-                id
-                handle
-            }
-        }
-    }
-`;
-
-export const GET_MY_TWEETS_QUERY = gql`
-    query GetMyTweets {
-        myTweets {
-            id
-            content
-            postedAt
-            postedBy {
-                id
-                handle
-                firstName
-                lastName
-            }
-            mentions {
-                id
-                handle
-                firstName
-                lastName
-            }
-        }
-    }
-`;
+import { GET_MYSELF_QUERY, GET_FOLLOWEE_TWEETS_QUERY } from '@/gql';
 
 export default {
     name: 'HomeView',
-    components: {
-        ProfileCard,
-        PostTweetForm,
-        SingleTweet
-    },
-    computed: {
-        profile() {
-            return this.$store.getters.getProfile;
-        }
-    },
     data() {
         return {
+            myProfile: {},
             followeeTweets: [],
-            myTweets: [],
             activeTab: 1
         }
     },
@@ -135,16 +59,12 @@ export default {
         followeeTweets: {
             query: GET_FOLLOWEE_TWEETS_QUERY
         },
-        myTweets: {
-            query: GET_MY_TWEETS_QUERY
+        myProfile: {
+            query: GET_MYSELF_QUERY,
+            update: data => data.getMyself
         }
     },
     methods: {
-        async fetchMyProfile() {
-            await this.$apollo.query({
-                query: GET_MY_PROFILE_QUERY
-            }).then(response => this.$store.dispatch('updateProfile', response.data.getMyself));
-        },
         onScrolledToBottom() {
             this.$apollo.queries.followeeTweets.fetchMore({
                 variables: {
@@ -159,9 +79,6 @@ export default {
                 }
             })
         }
-    },
-    mounted() {
-        this.fetchMyProfile();
     }
 };
 </script>

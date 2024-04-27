@@ -28,7 +28,7 @@
 
 <script>
 import gql from 'graphql-tag';
-import { GET_MY_TWEETS_QUERY } from '@/views/HomeView.vue';
+import { GET_MYSELF_QUERY } from '@/gql';
 
 const POST_TWEET_MUTATION = gql`
     mutation PostTweet($content: String!) {
@@ -37,17 +37,24 @@ const POST_TWEET_MUTATION = gql`
         content
         postedAt
         postedBy {
-          id
-          handle
-          firstName
-          lastName
+            id
+            handle
+            firstName
+            lastName
         }
         mentions {
-          id
-          handle
-          firstName
-          lastName
+            id
+            handle
+            firstName
+            lastName
         }
+        likedBy {
+            id
+            handle
+            firstName
+            lastName
+        }
+        likedByMe
       }
     }
   `;
@@ -89,15 +96,9 @@ export default {
                     content: this.tweetText
                 },
                 update: (store, { data: { postTweet } }) => {
-                    let data = store.readQuery({ query: GET_MY_TWEETS_QUERY });
-                    data = {
-                        ...data,
-                        myTweets: [
-                            postTweet,
-                            ...data.myTweets
-                        ]
-                    };
-                    store.writeQuery({ query: GET_MY_TWEETS_QUERY, data });
+                    let data = store.readQuery({ query: GET_MYSELF_QUERY });
+                    data.getMyself.tweets.unshift(postTweet);
+                    store.writeQuery({ query: GET_MYSELF_QUERY, data });
                 }
             }).then(() => this.tweetText = '');
         },

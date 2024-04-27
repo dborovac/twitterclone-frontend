@@ -79,7 +79,6 @@ export default {
 		logout() {
 			logout();
 			this.$apollo.provider.defaultClient.clearStore();
-			this.$store.reset();
 			this.$router.push({ name: 'Login' });
 		},
 		searchUsers(searchQuery) {
@@ -102,6 +101,13 @@ export default {
 </script>
 
 <style>
+body {
+  background: url("./assets/wave.svg") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
 * {
 	font-family: "DM Sans", sans-serif;
 }

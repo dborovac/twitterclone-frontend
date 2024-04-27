@@ -1,14 +1,21 @@
 <template>
     <div>
-        <b-container class="mt-4">
+        <b-container v-if="user && user.tweets" class="mt-4">
             <b-row>
                 <b-col md="5">
                     <ProfileCard :user="user" />
                 </b-col>
                 <b-col md="7">
-                    <div v-for="tweet in tweets" :key="tweet.id">
-                        <SingleTweet :tweet="tweet" :user="user" />
-                    </div>
+                    <b-card v-if="user.tweets.length > 0" title="My tweets card" class="mb-5" no-body>
+                        <b-card-body>
+                            <div v-for="tweet in user.tweets" :key="tweet.id">
+                                <SingleTweet :tweet="tweet" />
+                            </div>
+                        </b-card-body>
+                    </b-card>
+                    <b-card v-else>
+                        <div class="text-center">Nothing here</div>
+                    </b-card>
                 </b-col>
             </b-row>
         </b-container>
@@ -16,42 +23,25 @@
 </template>
 
 <script>
-import ProfileCard from '@/components/ProfileCard.vue';
-import SingleTweet from '@/components/SingleTweet.vue';
-import { GET_USER_QUERY } from '@/iam-queries';
+import { GET_USER_QUERY } from '@/gql';
 
 export default {
     name: 'ProfileView',
-    components: {
-        ProfileCard,
-        SingleTweet
-    },
     data() {
         return {
-            tweets: [],
             user: {}
         }
     },
-    methods: {
-        async getUserById() {
-            await this.$apollo.query({
-                query: GET_USER_QUERY,
-                variables: {
+    apollo: {
+        user: {
+            query: GET_USER_QUERY,
+            variables() {
+                return {
                     userId: this.$route.params.id
                 }
-            }).then(response => {
-                this.user = response.data.getUserById;
-                this.tweets = this.user.tweets;
-            });
+            },
+            update: data => data.getUserById
         }
-    },
-    watch: {
-        $route: function() {
-            this.getUserById();
-        }
-    },
-    mounted() {
-        this.getUserById();
     }
 }
 </script>
