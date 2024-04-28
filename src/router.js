@@ -8,7 +8,7 @@ import RegisterView from './views/RegisterView.vue';
 import SuccessfulRegistrationView from './views/SuccessfulRegistrationView.vue';
 import { apolloClient } from './main.js';
 
-import { isAuthenticated } from './auth';
+import { isAuthenticated, logout } from './auth';
 
 Vue.use(VueRouter);
 
@@ -63,7 +63,8 @@ router.beforeEach((to, from, next) => {
     if (isAuthenticated()) {
       next();
     } else {
-      next('login');
+      logout();
+      next({ name: 'Login' });
     }
   } else {
     next();

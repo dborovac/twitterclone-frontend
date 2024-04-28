@@ -42,6 +42,10 @@ const apolloProvider = new VueApollo({
   defaultClient: apolloClient,
 });
 
+// vuejs-jwt
+import VueJWT from 'vuejs-jwt';
+Vue.use(VueJWT);
+
 // Bootstrap
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
