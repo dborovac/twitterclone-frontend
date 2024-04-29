@@ -15,6 +15,8 @@ import SingleTweet from './components/SingleTweet.vue';
 Vue.component("SingleTweet", SingleTweet);
 import TrendingTopics from './components/TrendingTopics.vue';
 Vue.component("TrendingTopics", TrendingTopics);
+import TweetsContainer from './components/TweetsContainer.vue';
+Vue.component("TweetsContainer", TweetsContainer);
 
 // Apollo
 import { ApolloClient } from 'apollo-client';

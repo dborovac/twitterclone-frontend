@@ -12,7 +12,7 @@
 			</div>
 		</router-link>
 		<b-card-text>
-			<span v-html="formatTweetContent(tweet.content, tweet.mentions)" @click.prevent="click"></span>
+			<span v-html="formatTweetContent(tweet.content, tweet.mentions, tweet.hashtags)" @click.prevent="click"></span>
 		</b-card-text>
 		<b-card-footer class="d-flex justify-content-between">
 			<div>
@@ -85,16 +85,23 @@ export default {
 	},
 	methods: {
 		formatDateTime,
-		formatTweetContent(content, mentions) {
+		formatTweetContent(content, mentions, hashtags) {
 			mentions.forEach(mention => {
-				content = content.replace('@' + mention.handle, '<a href="' + mention.id + '">@' + mention.handle + '</a>');
+				content = content.replace('@' + mention.handle, '<a data-type="mention" href="' + mention.id + '">@' + mention.handle + '</a>');
+			});
+			hashtags.forEach(hashtag => {
+				content = content.replace(hashtag.name, '<a data-type="hashtag" href="' + hashtag.id + '">' + hashtag.name + '</a>');
 			});
 			return content;
 		},
 		click(ev) {
-			if (ev.target.tagName === 'A') {
+			const type = ev.target.getAttribute("data-type");
+			if (type === 'mention') {
 				this.$router.push({ name: 'Profile', params: { id: ev.target.attributes.href.value } });
 			}
+			// if (type === 'hashtag') {
+
+			// }
 		},
 		copyUrl() {
 			this.$refs.popover.$emit('open');

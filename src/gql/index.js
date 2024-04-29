@@ -44,6 +44,10 @@ export const GET_USER_QUERY = gql`
                     handle
                 }
                 likedByMe
+                hashtags {
+                    id
+                    name
+                }
             }
         }
     }
@@ -93,6 +97,10 @@ export const GET_MYSELF_QUERY = gql`
                     handle
                 }
                 likedByMe
+                hashtags {
+                    id
+                    name
+                }
             }
         }
     }
@@ -123,6 +131,10 @@ export const GET_FOLLOWEE_TWEETS_QUERY = gql`
                 handle
             }
             likedByMe
+            hashtags {
+                id
+                name
+            }
         }
     }
 `;

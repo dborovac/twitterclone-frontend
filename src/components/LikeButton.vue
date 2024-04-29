@@ -91,7 +91,6 @@ export default {
                     } else {
                         updatedLikes = likes.likedBy.filter(obj => obj.id !== this.myProfile.id);
                     }
-                    console.log(updatedLikes);
                     store.writeFragment({
                         id: cachedTweetId,
                         fragment: LIKED_BY_FRAGMENT,

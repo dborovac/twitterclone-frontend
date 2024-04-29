@@ -6,16 +6,7 @@
                     <ProfileCard :user="user" />
                 </b-col>
                 <b-col md="7">
-                    <b-card v-if="user.tweets.length > 0" title="My tweets card" class="mb-5" no-body>
-                        <b-card-body>
-                            <div v-for="tweet in user.tweets" :key="tweet.id">
-                                <SingleTweet :tweet="tweet" />
-                            </div>
-                        </b-card-body>
-                    </b-card>
-                    <b-card v-else>
-                        <div class="text-center">Nothing here</div>
-                    </b-card>
+                    <TweetsContainer :tweets="user.tweets" />
                 </b-col>
             </b-row>
         </b-container>

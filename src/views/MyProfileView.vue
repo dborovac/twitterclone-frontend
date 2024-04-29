@@ -6,9 +6,7 @@
                     <ProfileCard :user="myProfile" />
                 </b-col>
                 <b-col md="7">
-                    <div v-for="tweet in myProfile.tweets" :key="tweet.id">
-                        <SingleTweet :tweet="tweet" />
-                    </div>
+                    <TweetsContainer :tweets="myProfile.tweets" />
                 </b-col>
             </b-row>
         </b-container>
