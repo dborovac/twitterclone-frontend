@@ -3,7 +3,7 @@
         <b-container v-if="user && user.tweets" class="mt-4">
             <b-row>
                 <b-col md="5">
-                    <ProfileCard :user="user" />
+                    <ProfileCard :user="user" extended/>
                 </b-col>
                 <b-col md="7">
                     <TweetsContainer :tweets="user.tweets" />
@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { GET_USER_QUERY } from '@/gql';
+import { QUERY_USER_BY_ID } from '@/gql';
 
 export default {
     name: 'ProfileView',
@@ -25,7 +25,7 @@ export default {
     },
     apollo: {
         user: {
-            query: GET_USER_QUERY,
+            query: QUERY_USER_BY_ID,
             variables() {
                 return {
                     userId: this.$route.params.id

@@ -17,7 +17,7 @@
                 <p class="m-0 text-muted">@{{ user.handle }}</p>
             </div>
         </div>
-        <div v-if="withFollowButton && user.handle !== myProfile.handle" class="flex-column ml-auto">
+        <div v-if="user.handle !== myProfile.handle" class="flex-column ml-auto">
             <b-button v-if="isUserInMyFollowees(myProfile.followees, user.id)" pill
                 :variant="getAttributeBasedOnHover().variant" @click="onUnfollow(user.id)" @mouseover="isFollowButtonHovered = true"
                 @mouseleave="isFollowButtonHovered = false">{{ getAttributeBasedOnHover().text }}</b-button>
@@ -28,7 +28,7 @@
 
 <script>
 import gql from 'graphql-tag';
-import { GET_MYSELF_QUERY, GET_USER_QUERY } from '@/gql';
+import { QUERY_MYSELF, QUERY_USER_BY_ID } from '@/gql';
 
 const FOLLOW_MUTATION = gql`
     mutation Follow($userId: String!) {
@@ -78,7 +78,6 @@ export default {
     name: 'CompactProfileInfo',
     props: {
         userId: String,
-        withFollowButton: Boolean,
         size: String
     },
     data() {
@@ -90,11 +89,11 @@ export default {
     },
     apollo: {
         myProfile: {
-            query: GET_MYSELF_QUERY,
+            query: QUERY_MYSELF,
             update: data => data.getMyself
         },
         user: {
-            query: GET_USER_QUERY,
+            query: QUERY_USER_BY_ID,
             variables() {
                 return {
                     userId: this.userId

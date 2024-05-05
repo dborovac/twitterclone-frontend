@@ -68,14 +68,14 @@ addIcons(...Hi);
 Vue.component("v-icon", OhVueIcon);
 
 // vue-share-buttons
-import TwitterButton from "vue-share-buttons/src/components/TwitterButton";
-Vue.component("TwitterButton", TwitterButton);
-import FacebookButton from "vue-share-buttons/src/components/FacebookButton";
-Vue.component("FacebookButton", FacebookButton);
-import RedditButton from "vue-share-buttons/src/components/RedditButton";
-Vue.component("RedditButton", RedditButton);
-import LinkedInButton from "vue-share-buttons/src/components/LinkedInButton";
-Vue.component("LinkedInButton", LinkedInButton);
+// import TwitterButton from "vue-share-buttons/src/components/TwitterButton";
+// Vue.component("TwitterButton", TwitterButton);
+// import FacebookButton from "vue-share-buttons/src/components/FacebookButton";
+// Vue.component("FacebookButton", FacebookButton);
+// import RedditButton from "vue-share-buttons/src/components/RedditButton";
+// Vue.component("RedditButton", RedditButton);
+// import LinkedInButton from "vue-share-buttons/src/components/LinkedInButton";
+// Vue.component("LinkedInButton", LinkedInButton);
 
 // floating-vue
 import 'floating-vue/dist/style.css'

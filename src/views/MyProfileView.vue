@@ -3,7 +3,7 @@
         <b-container class="mt-4">
             <b-row>
                 <b-col md="5">
-                    <ProfileCard :user="myProfile" />
+                    <ProfileCard :user="myProfile" extended/>
                 </b-col>
                 <b-col md="7">
                     <TweetsContainer :tweets="myProfile.tweets" />
@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { GET_MYSELF_QUERY } from '@/gql';
+import { QUERY_MYSELF } from '@/gql';
 
 export default {
     name: 'MyProfileView',
@@ -25,7 +25,7 @@ export default {
     },
     apollo: {
         myProfile: {
-            query: GET_MYSELF_QUERY,
+            query: QUERY_MYSELF,
             update: data => data.getMyself
         }
     }

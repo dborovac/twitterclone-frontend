@@ -1,10 +1,11 @@
 <template>
-    <div @click="onLike" class="d-inline">
-        <span :id="`popover-target-${tweet.id}`" class="mr-5">
+    <div class="mr-5 d-inline">
+        <span :id="`popover-target-${tweet.id}`" @click="onLike" style="cursor: pointer;">
             <v-icon :name="tweet.likedByMe ? 'fa-heart' : 'fa-regular-heart'" fill="#FF204E"></v-icon>
             {{ tweet.likedBy.length }}
         </span>
-        <b-popover v-if="tweet.likedBy.length > 0" :target="`popover-target-${tweet.id}`" triggers="hover" title="Liked by">
+        <b-popover v-if="tweet.likedBy.length > 0" :target="`popover-target-${tweet.id}`" triggers="hover"
+            title="Liked by">
             <div v-for="like in tweet.likedBy" :key="like.id">
                 <b>{{ like.firstName + ' ' + like.lastName }}</b> @{{ like.handle }}
             </div>
@@ -13,14 +14,14 @@
         <b-modal :id="`bv-modal-liked-by-list-${tweet.id}`" hide-footer scrollable>
             <template #modal-title>People who like this tweet</template>
             <div v-for="like in tweet.likedBy" :key="like.id">
-                <CompactProfileInfo :userId="like.id" :withFollowButton="true" size="md"/>
+                <CompactProfileInfo :userId="like.id" size="md" />
             </div>
         </b-modal>
     </div>
 </template>
 
 <script>
-import { GET_MYSELF_QUERY } from '@/gql';
+import { QUERY_MYSELF } from '@/gql';
 import gql from 'graphql-tag';
 
 const LIKE_TWEET_MUTATION = gql`
@@ -60,7 +61,7 @@ export default {
     },
     apollo: {
         myProfile: {
-            query: GET_MYSELF_QUERY,
+            query: QUERY_MYSELF,
             update: data => data.getMyself
         }
     },

@@ -11,7 +11,7 @@
                         <PostTweetForm />
                     </b-card>
 
-                    <b-card title="Tweets card" class="mb-5" no-body>
+                    <b-card class="mb-5" no-body>
                         <b-card-header header-tag="nav">
                             <b-nav card-header tabs v-model="activeTab">
                                 <b-nav-item :eventKey="1" @click="activeTab = 1" :active="activeTab === 1"><span style="color: #212529">Following</span></b-nav-item>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { GET_MYSELF_QUERY, GET_FOLLOWEE_TWEETS_QUERY } from '@/gql';
+import { QUERY_MYSELF, QUERY_FOLLOWEE_TWEETS } from '@/gql';
 
 export default {
     name: 'HomeView',
@@ -52,15 +52,23 @@ export default {
         return {
             myProfile: {},
             followeeTweets: [],
-            activeTab: 1
+            activeTab: 1,
+            first: 5,
+            offset: 0
         }
     },
     apollo: {
         followeeTweets: {
-            query: GET_FOLLOWEE_TWEETS_QUERY
+            query: QUERY_FOLLOWEE_TWEETS,
+            variables() {
+                return {
+                    first: this.first,
+                    offset: this.offset
+                }
+            }
         },
         myProfile: {
-            query: GET_MYSELF_QUERY,
+            query: QUERY_MYSELF,
             update: data => data.getMyself
         }
     },
@@ -68,7 +76,8 @@ export default {
         onScrolledToBottom() {
             this.$apollo.queries.followeeTweets.fetchMore({
                 variables: {
-                    cursorTimestamp: this.followeeTweets.slice(-1)[0].postedAt
+                    first: this.first,
+                    offset: this.followeeTweets.length
                 },
                 updateQuery: (previousResult, { fetchMoreResult }) => {
                     const oldTweets = previousResult.followeeTweets;

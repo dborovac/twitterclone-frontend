@@ -28,36 +28,7 @@
 
 <script>
 import gql from 'graphql-tag';
-import { GET_MYSELF_QUERY } from '@/gql';
-
-const POST_TWEET_MUTATION = gql`
-    mutation PostTweet($content: String!) {
-      postTweet(request: { content: $content }) {
-        id
-        content
-        postedAt
-        postedBy {
-            id
-            handle
-            firstName
-            lastName
-        }
-        mentions {
-            id
-            handle
-            firstName
-            lastName
-        }
-        likedBy {
-            id
-            handle
-            firstName
-            lastName
-        }
-        likedByMe
-      }
-    }
-  `;
+import { QUERY_MYSELF, MUTATION_POST_TWEET } from '@/gql';
 
 const SEARCH_USERS_BY_HANDLE_QUERY = gql`
     query SearchUsersByHandle($handle: String!) {
@@ -91,14 +62,14 @@ export default {
         },
         postTweet() {
             this.$apollo.mutate({
-                mutation: POST_TWEET_MUTATION,
+                mutation: MUTATION_POST_TWEET,
                 variables: {
                     content: this.tweetText
                 },
                 update: (store, { data: { postTweet } }) => {
-                    let data = store.readQuery({ query: GET_MYSELF_QUERY });
+                    let data = store.readQuery({ query: QUERY_MYSELF });
                     data.getMyself.tweets.unshift(postTweet);
-                    store.writeQuery({ query: GET_MYSELF_QUERY, data });
+                    store.writeQuery({ query: QUERY_MYSELF, data });
                 }
             }).then(() => this.tweetText = '');
         },

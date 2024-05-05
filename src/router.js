@@ -21,6 +21,14 @@ const routes = [
     }
   },
   {
+    path: '/:hashtag',
+    name: 'Hashtag',
+    component: HashtagView,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: LoginView
@@ -71,12 +79,13 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-import { GET_MYSELF_QUERY } from './gql';
+import { QUERY_MYSELF } from './gql';
+import HashtagView from './views/HashtagView.vue';
 
 router.onReady(async () => {
   if (isAuthenticated()) {
     await apolloClient.query({
-      query: GET_MYSELF_QUERY
+      query: QUERY_MYSELF
     });
   }
 })

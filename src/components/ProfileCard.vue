@@ -1,7 +1,12 @@
 <template>
     <b-container>
         <b-card v-if="user">
-            <CompactProfileInfo :userId="user.id" :withFollowButton="true" size="lg" />
+            <CompactProfileInfo :userId="user.id" size="lg" />
+            <div v-if="extended" class="mb-4">
+                <p class="text-muted m-0">✉️ {{ user.email }}</p>
+                <p class="text-muted m-0">🎁 {{ user.birthday }}</p>
+                <p class="text-muted m-0">🌍 Belgrade, Serbia</p>
+            </div>
             <b-row class="text-center">
                 <b-col md="6">
                     <h5 v-if="user.followers" class="mb-0">{{ new Intl.NumberFormat().format(user.followers.length) }}</h5>
@@ -20,7 +25,8 @@
 export default {
     name: 'ProfileCard',
     props: {
-        user: Object
+        user: Object,
+        extended: Boolean
     },
     data() {
         return {

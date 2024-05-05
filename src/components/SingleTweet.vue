@@ -90,7 +90,7 @@ export default {
 				content = content.replace('@' + mention.handle, '<a data-type="mention" href="' + mention.id + '">@' + mention.handle + '</a>');
 			});
 			hashtags.forEach(hashtag => {
-				content = content.replace(hashtag.name, '<a data-type="hashtag" href="' + hashtag.id + '">' + hashtag.name + '</a>');
+				content = content.replace(hashtag.name, '<a data-type="hashtag" href="' + hashtag.name + '">' + hashtag.name + '</a>');
 			});
 			return content;
 		},
@@ -99,9 +99,9 @@ export default {
 			if (type === 'mention') {
 				this.$router.push({ name: 'Profile', params: { id: ev.target.attributes.href.value } });
 			}
-			// if (type === 'hashtag') {
-
-			// }
+			if (type === 'hashtag') {
+				this.$router.push({ name: 'Hashtag', params: { hashtag: ev.target.attributes.href.value } })
+			}
 		},
 		copyUrl() {
 			this.$refs.popover.$emit('open');
