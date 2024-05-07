@@ -1,22 +1,12 @@
 <template>
 	<b-card class="mb-2 mr-2">
-		<router-link :to="{ name: 'Profile', params: { id: tweet.postedBy.id } }" style="text-decoration: none; color: inherit;">
-			<div class="d-flex flex-row mb-2 align-items-center">
-				<div>
-					<b-avatar size="md" variant="dark" rounded class="avatar-custom"></b-avatar>
-				</div>
-				<div class="ml-2">
-					<h6 class="m-0">{{ tweet.postedBy.firstName }} {{ tweet.postedBy.lastName }}</h6>
-					<p class="m-0 text-muted">@{{ tweet.postedBy.handle }}</p>
-				</div>
-			</div>
-		</router-link>
+		<CompactProfileInfo class="mb-2" :userId="tweet.postedBy.id" size="md" :withFollowButton=false />
 		<b-card-text>
 			<span v-html="formatTweetContent(tweet.content, tweet.mentions, tweet.hashtags)" @click.prevent="click"></span>
 		</b-card-text>
 		<b-card-footer class="d-flex justify-content-between">
 			<div>
-				<LikeButton class="mr-1" :tweet="tweet" />
+				<LikeButton class="mr-5" :tweet="tweet" />
 				<a id="reply-button" href="#" class="mr-4">
 					<v-icon class="mr-1" name="hi-solid-reply" fill="#222831"></v-icon>
 					Reply
@@ -87,20 +77,21 @@ export default {
 		formatDateTime,
 		formatTweetContent(content, mentions, hashtags) {
 			mentions.forEach(mention => {
-				content = content.replace('@' + mention.handle, '<a data-type="mention" href="' + mention.id + '">@' + mention.handle + '</a>');
+				content = content.replace(`@${mention.handle}`, `<a href="${mention.id}" data-type="mention" data-title="${mention.firstName} ${mention.lastName} @${mention.handle}">@${mention.handle}</a>`);
 			});
 			hashtags.forEach(hashtag => {
-				content = content.replace(hashtag.name, '<a data-type="hashtag" href="' + hashtag.name + '">' + hashtag.name + '</a>');
+				content = content.replace(hashtag.name, `<a href="${hashtag.name}" data-type="hashtag" data-title="${hashtag.name}">${hashtag.name}</a>`);
 			});
 			return content;
 		},
 		click(ev) {
 			const type = ev.target.getAttribute("data-type");
+			const title = ev.target.getAttribute("data-title");
 			if (type === 'mention') {
-				this.$router.push({ name: 'Profile', params: { id: ev.target.attributes.href.value } });
+				this.$router.push({ name: 'Profile', params: { id: ev.target.attributes.href.value, title: title } });
 			}
 			if (type === 'hashtag') {
-				this.$router.push({ name: 'Hashtag', params: { hashtag: ev.target.attributes.href.value } })
+				this.$router.push({ name: 'Hashtag', params: { hashtag: ev.target.attributes.href.value, title: title } });
 			}
 		},
 		copyUrl() {

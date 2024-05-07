@@ -38,10 +38,11 @@ export const FRAGMENT_TWEET_DATA = gql`
         mentions {
             ...BasicUserData
         }
-        likedBy(first: $likedByFirst, offset: $likedByOffset) {
+        likedBy(pageRequest: { first: 2, offset: 0 }) {
             ...BasicUserData
         }
         likedByMe
+        numberOfLikes
         hashtags {
             id
             name
@@ -51,7 +52,7 @@ export const FRAGMENT_TWEET_DATA = gql`
 `;
 
 export const MUTATION_POST_TWEET = gql`
-    mutation PostTweet($content: String!) {
+    mutation($content: String!) {
       postTweet(request: { content: $content }) {
         ...TweetData
       }
@@ -60,7 +61,7 @@ export const MUTATION_POST_TWEET = gql`
 `;
 
 export const QUERY_USER_BY_ID = gql`
-    query GetUserById($userId: String!) {
+    query($userId: String!) {
         getUserById(userId: $userId) {
             ...UserData
             tweets {
@@ -73,7 +74,7 @@ export const QUERY_USER_BY_ID = gql`
 `;
 
 export const QUERY_MYSELF = gql`
-    query GetMyself {
+    query {
         getMyself {
             ...UserData
             tweets {
@@ -86,8 +87,8 @@ export const QUERY_MYSELF = gql`
 `;
 
 export const QUERY_FOLLOWEE_TWEETS = gql`
-    query FolloweeTweets($first: Int!, $offset: Int!) {
-        followeeTweets(first: $first, offset: $offset) {
+    query($pageRequest: PageRequest!) {
+        followeeTweets(pageRequest: $pageRequest) {
             ...TweetData
         }
     }
@@ -95,7 +96,7 @@ export const QUERY_FOLLOWEE_TWEETS = gql`
 `;
 
 export const QUERY_TWEETS_TAGGED_WITH = gql`
-    query TweetsTaggedWith($hashtag: String!) {
+    query($hashtag: String!) {
         taggedWith(hashtag: $hashtag) {
             ...TweetData
         }
@@ -104,7 +105,7 @@ export const QUERY_TWEETS_TAGGED_WITH = gql`
 `;
 
 export const QUERY_TREND_FOR_HASHTAG = gql`
-    query TrendForHashtag($hashtag: String!) {
+    query($hashtag: String!) {
         trendForHashtag(hashtag: $hashtag) {
             hashtag {
                 id
@@ -113,4 +114,19 @@ export const QUERY_TREND_FOR_HASHTAG = gql`
             tweetCount
         }
     }
+`;
+
+export const QUERY_FOLLOW_RECOMMENDATIONS = gql`
+    query($first: Int!) {
+        followRecommendations(first: $first) {
+            recommendation {
+                ...BasicUserData
+            }
+            relevance
+            mutualFollowees {
+                ...BasicUserData
+            }
+        }
+    }
+    ${FRAGMENT_BASIC_USER_DATA}
 `;

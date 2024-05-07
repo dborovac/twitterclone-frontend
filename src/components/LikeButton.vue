@@ -1,10 +1,10 @@
 <template>
-    <div class="mr-5 d-inline">
+    <div class="d-inline">
         <span :id="`popover-target-${tweet.id}`" @click="onLike" style="cursor: pointer;">
             <v-icon :name="tweet.likedByMe ? 'fa-heart' : 'fa-regular-heart'" fill="#FF204E"></v-icon>
-            {{ tweet.likedBy.length }}
+            {{ tweet.numberOfLikes }}
         </span>
-        <b-popover v-if="tweet.likedBy.length > 0" :target="`popover-target-${tweet.id}`" triggers="hover"
+        <b-popover v-if="tweet.numberOfLikes > 0" :target="`popover-target-${tweet.id}`" triggers="hover"
             title="Liked by">
             <div v-for="like in tweet.likedBy" :key="like.id">
                 <b>{{ like.firstName + ' ' + like.lastName }}</b> @{{ like.handle }}
@@ -14,39 +14,43 @@
         <b-modal :id="`bv-modal-liked-by-list-${tweet.id}`" hide-footer scrollable>
             <template #modal-title>People who like this tweet</template>
             <div v-for="like in tweet.likedBy" :key="like.id">
-                <CompactProfileInfo :userId="like.id" size="md" />
+                <CompactProfileInfo class="mb-3" :userId="like.id" size="md" withFollowButton />
             </div>
+            <a v-if="showLoadMoreButton" href="#" @click="onLoadMore">⟲ Load more</a>
         </b-modal>
     </div>
 </template>
 
 <script>
-import { QUERY_MYSELF } from '@/gql';
+import { QUERY_MYSELF, FRAGMENT_BASIC_USER_DATA } from '@/gql';
 import gql from 'graphql-tag';
 
 const LIKE_TWEET_MUTATION = gql`
-    mutation LikeTweet($tweetId: String!) {
+    mutation($tweetId: String!) {
         toggleLike(tweetId: $tweetId) {
             likedByMe
         }
     }
 `;
 
-const LIKED_BY_ME_FRAGMENT = gql`
-    fragment LikedByMeFragment on Tweet {
+const LIKES_FRAGMENT = gql`
+    fragment LikesFragment on Tweet {
+        likedBy(pageRequest: { first: 2, offset: 0 }) {
+            ...BasicUserData
+        }
         likedByMe
+        numberOfLikes
     }
+    ${FRAGMENT_BASIC_USER_DATA}
 `;
 
 const LIKED_BY_FRAGMENT = gql`
     fragment LikedByFragment on Tweet {
-        likedBy {
-            id
-            handle
-            firstName
-            lastName
+        likedBy(pageRequest: { first: 2, offset: 0 }) {
+            ...BasicUserData
         }
     }
+    ${FRAGMENT_BASIC_USER_DATA}
 `;
 
 export default {
@@ -56,7 +60,8 @@ export default {
     },
     data() {
         return {
-            myProfile: {}
+            myProfile: {},
+            showLoadMoreButton: true
         }
     },
     apollo: {
@@ -74,33 +79,67 @@ export default {
                 },
                 update: (store, { data: { toggleLike: { likedByMe, __typename } } }) => {
                     const cachedTweetId = `${__typename}:${this.tweet.id}`;
+                    let likes = store.readFragment({
+                        id: cachedTweetId,
+                        fragment: LIKES_FRAGMENT,
+                        fragmentName: 'LikesFragment'
+                    });
+                    let updatedNumberOfLikes;
+                    let updatedLikedBy;
+                    if (likedByMe) {
+                        updatedNumberOfLikes = likes.numberOfLikes + 1;
+                        updatedLikedBy = [this.myProfile, ...likes.likedBy];
+                    } else {
+                        updatedNumberOfLikes = likes.numberOfLikes - 1;
+                        updatedLikedBy = likes.likedBy.filter(obj => obj.id !== this.myProfile.id);
+                    }
                     store.writeFragment({
                         id: cachedTweetId,
-                        fragment: LIKED_BY_ME_FRAGMENT,
+                        fragment: LIKES_FRAGMENT,
+                        fragmentName: 'LikesFragment',
                         data: {
+                            likedBy: updatedLikedBy,
+                            numberOfLikes: updatedNumberOfLikes,
                             likedByMe: likedByMe,
                             __typename: __typename
                         }
                     });
-                    let likes = store.readFragment({
-                        id: cachedTweetId,
-                        fragment: LIKED_BY_FRAGMENT
-                    });
-                    let updatedLikes;
-                    if (likedByMe) {
-                        updatedLikes = [...likes.likedBy, this.myProfile];
-                    } else {
-                        updatedLikes = likes.likedBy.filter(obj => obj.id !== this.myProfile.id);
+                }
+            });
+        },
+        onLoadMore() {
+            this.$apollo.query({
+                query: gql`
+                    query {
+                        tweetById(id: "${this.tweet.id}") {
+                            likedBy(pageRequest: { first: 2, offset: ${this.tweet.likedBy.length} }) {
+                                ...BasicUserData
+                            }
+                        }
                     }
-                    store.writeFragment({
+                    ${FRAGMENT_BASIC_USER_DATA}
+                `
+            }).then((response) => {
+                if (response.data.tweetById.likedBy.length === 0) {
+                    this.showLoadMoreButton = false;
+                    return;
+                }
+                const cachedTweetId = `Tweet:${this.tweet.id}`;
+                let likes = this.$apollo.provider.defaultClient.cache.readFragment({
+                    id: cachedTweetId,
+                    fragment: LIKED_BY_FRAGMENT,
+                    fragmentName: 'LikedByFragment'
+                });
+                let updatedLikedBy = [...likes.likedBy, ...response.data.tweetById.likedBy];
+                this.$apollo.provider.defaultClient.cache.writeFragment({
                         id: cachedTweetId,
                         fragment: LIKED_BY_FRAGMENT,
+                        fragmentName: 'LikedByFragment',
                         data: {
-                            likedBy: updatedLikes,
-                            __typename: __typename
+                            likedBy: updatedLikedBy,
+                            __typename: 'Tweet'
                         }
                     });
-                }
             });
         }
     }

@@ -1,23 +1,16 @@
 <template>
-    <div class="d-flex flex-row mb-4 align-items-center">
+    <div class="d-flex flex-row align-items-center">
         <div class="flex-column">
             <b-avatar :size="size" variant="dark" rounded class="avatar-custom"></b-avatar>
         </div>
         <div class="ml-2 flex-column">
-            <div v-if="user.handle !== myProfile.handle">
-                <router-link v-if="user.id" :to="{ name: 'Profile', params: { id: user.id } }" style="text-decoration: none; color: inherit;">
-                    <h6 v-if="size === 'md'" class="m-0">{{ user.firstName }} {{ user.lastName }}</h6>
-                    <h5 v-if="size === 'lg'" class="m-0">{{ user.firstName }} {{ user.lastName }}</h5>
-                    <p class="m-0 text-muted">@{{ user.handle }}</p>
-                </router-link>
-            </div>
-            <div v-else>
+            <router-link v-if="user.id" :to="{ name: 'Profile', params: { id: user.id, title: `${user.firstName} ${user.lastName} @${user.handle}` } }" style="text-decoration: none; color: inherit;">
                 <h6 v-if="size === 'md'" class="m-0">{{ user.firstName }} {{ user.lastName }}</h6>
                 <h5 v-if="size === 'lg'" class="m-0">{{ user.firstName }} {{ user.lastName }}</h5>
                 <p class="m-0 text-muted">@{{ user.handle }}</p>
-            </div>
+            </router-link>
         </div>
-        <div v-if="user.handle !== myProfile.handle" class="flex-column ml-auto">
+        <div v-if="withFollowButton && user.handle !== myProfile.handle" class="flex-column ml-auto">
             <b-button v-if="isUserInMyFollowees(myProfile.followees, user.id)" pill
                 :variant="getAttributeBasedOnHover().variant" @click="onUnfollow(user.id)" @mouseover="isFollowButtonHovered = true"
                 @mouseleave="isFollowButtonHovered = false">{{ getAttributeBasedOnHover().text }}</b-button>
@@ -28,10 +21,10 @@
 
 <script>
 import gql from 'graphql-tag';
-import { QUERY_MYSELF, QUERY_USER_BY_ID } from '@/gql';
+import { QUERY_MYSELF, QUERY_USER_BY_ID, QUERY_FOLLOW_RECOMMENDATIONS } from '@/gql';
 
 const FOLLOW_MUTATION = gql`
-    mutation Follow($userId: String!) {
+    mutation($userId: String!) {
         follow(userId: $userId) {
             followers {
                 id
@@ -42,7 +35,7 @@ const FOLLOW_MUTATION = gql`
 `;
 
 const UNFOLLOW_MUTATION = gql`
-    mutation Unfollow($userId: String!) {
+    mutation($userId: String!) {
         unfollow(userId: $userId) {
             followers {
                 id
@@ -78,7 +71,8 @@ export default {
     name: 'CompactProfileInfo',
     props: {
         userId: String,
-        size: String
+        size: String,
+        withFollowButton: Boolean
     },
     data() {
         return {
@@ -152,6 +146,9 @@ export default {
                             __typename: __typename
                         }
                     });
+
+                    let followRecommendations = store.readQuery({ query: QUERY_FOLLOW_RECOMMENDATIONS, variables: { first: 5 } });
+                    console.log(followRecommendations);
                 }
             });
         },
@@ -189,6 +186,10 @@ export default {
                             __typename: __typename
                         }
                     });
+
+                    let followRecommendationsData = store.readQuery({ query: QUERY_FOLLOW_RECOMMENDATIONS, variables: { first: 5 } });
+                    followRecommendationsData.followRecommendations.forEach(obj => obj.mutualFollowees = obj.mutualFollowees.filter(followee => followee.id !== userId));
+                    store.writeQuery({ query: QUERY_FOLLOW_RECOMMENDATIONS, variables: { first: 5 }, data: followRecommendationsData });
                 }
             });
         },

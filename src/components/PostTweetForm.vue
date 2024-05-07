@@ -31,7 +31,7 @@ import gql from 'graphql-tag';
 import { QUERY_MYSELF, MUTATION_POST_TWEET } from '@/gql';
 
 const SEARCH_USERS_BY_HANDLE_QUERY = gql`
-    query SearchUsersByHandle($handle: String!) {
+    query($handle: String!) {
       searchUsersByHandle(handle: $handle) {
         id
         email

@@ -1,10 +1,10 @@
 <template>
     <b-container>
         <b-card v-if="user">
-            <CompactProfileInfo :userId="user.id" size="lg" />
+            <CompactProfileInfo class="mb-4" :userId="user.id" size="lg" withFollowButton />
             <div v-if="extended" class="mb-4">
                 <p class="text-muted m-0">✉️ {{ user.email }}</p>
-                <p class="text-muted m-0">🎁 {{ user.birthday }}</p>
+                <p v-if="user.birthday" class="text-muted m-0">🎁 {{ user.birthday }}</p>
                 <p class="text-muted m-0">🌍 Belgrade, Serbia</p>
             </div>
             <b-row class="text-center">

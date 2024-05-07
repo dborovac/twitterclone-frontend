@@ -16,6 +16,7 @@ const routes = [
   {
     path: '/',
     component: HomeView,
+    name: 'Home',
     meta: {
       requiresAuth: true
     }
@@ -25,7 +26,7 @@ const routes = [
     name: 'Hashtag',
     component: HashtagView,
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
     }
   },
   {
@@ -35,7 +36,7 @@ const routes = [
   },
   {
     path: '/profile/me',
-    name: 'MyProfile',
+    name: 'My profile',
     component: MyProfileView,
     meta: {
       requiresAuth: true
@@ -67,6 +68,12 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const titleFromParams = to.params?.title;
+  if (titleFromParams) {
+    document.title = titleFromParams;
+  } else {
+    document.title = to.name;
+  }
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (isAuthenticated()) {
       next();

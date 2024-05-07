@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-card v-if="tweets.length > 0" title="My tweets card" class="mb-5" no-body>
+        <b-card v-if="tweets.length > 0" class="mb-5" no-body>
             <b-card-header v-if="title">
                 <h5 class="m-0 d-inline">{{ title }}</h5>
                 <div v-if="tweetCount" class="d-inline">

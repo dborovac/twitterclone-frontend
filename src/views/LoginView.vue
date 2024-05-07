@@ -6,7 +6,7 @@
 			</b-col>
 			<b-col md="6">
 				<b-card>
-					<p>Don't have an account? <router-link to="/register">Sign up</router-link></p>
+					<p>Don't have an account? <router-link :to="{ name: 'Register' }">Sign up</router-link></p>
 					<hr>
 					<b-form @submit.prevent="login">
 						<b-form-group id="input-group-1">
@@ -42,7 +42,7 @@ export default {
 		async login() {
 			await this.$apollo.provider.defaultClient.mutate({
 				mutation: gql`
-          		mutation Login($request: LoginRequest!) {
+          		mutation($request: LoginRequest!) {
             		login(request: $request) {
               			token
             		}

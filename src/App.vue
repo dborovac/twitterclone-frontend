@@ -1,5 +1,8 @@
 <template>
 	<div id="app">
+		<head>
+			<title>Twitter clone</title>
+		</head>
 		<b-navbar toggleable="lg" type="dark" variant="info" style="position: sticky; top: 0; z-index: 1000;">
 			<b-container>
 				<b-navbar-brand to="/">Twitter Clone</b-navbar-brand>
@@ -30,7 +33,7 @@
 								</template>
 							</vue-bootstrap-typeahead>
 						</b-nav-form>
-						<b-nav-item v-if="isAuthenticated()" class="ml-3" to="/profile/me">My profile</b-nav-item>
+						<b-nav-item v-if="isAuthenticated()" class="ml-3" :to="{ name: 'My profile' }">My profile</b-nav-item>
 						<b-nav-item v-if="isAuthenticated()" @click="logout">Logout</b-nav-item>
 					</b-navbar-nav>
 				</b-collapse>
@@ -53,7 +56,7 @@ import gql from 'graphql-tag';
 import _ from 'underscore';
 
 const SEARCH_USERS_QUERY = gql`
-	query SearchUsers($searchQuery: String!) {
+	query($searchQuery: String!) {
 		searchUsers(searchQuery: $searchQuery) {
 			id
 			handle
@@ -78,7 +81,6 @@ export default {
 		isAuthenticated,
 		logout() {
 			logout();
-			this.$apollo.provider.defaultClient.clearStore();
 			this.$router.push({ name: 'Login' });
 		},
 		searchUsers(searchQuery) {
@@ -90,7 +92,7 @@ export default {
 			}).then(response => this.users = response.data.searchUsers);
 		},
 		onHit(user) {
-			this.$router.push({ name: 'Profile', params: { id: user.id } });
+			this.$router.push({ name: 'Profile', params: { id: user.id, title: `${user.firstName} ${user.lastName} @${user.handle}` } });
 			this.$refs.usersTypeahead.inputValue = '';
 		}
 	},

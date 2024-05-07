@@ -3,7 +3,8 @@
         <b-container v-if="user && user.tweets" class="mt-4">
             <b-row>
                 <b-col md="5">
-                    <ProfileCard :user="user" extended/>
+                    <ProfileCard class="mb-4" :user="user" extended/>
+                    <TrendingTopics class="mb-4" />
                 </b-col>
                 <b-col md="7">
                     <TweetsContainer :tweets="user.tweets" />

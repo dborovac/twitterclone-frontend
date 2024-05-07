@@ -4,7 +4,8 @@
             <b-row>
                 <b-col md="5">
                     <ProfileCard class="mb-4" :user="myProfile" />
-                    <TrendingTopics />
+                    <TrendingTopics class="mb-4" />
+                    <FollowRecommendations :numberOfRecommendations=5 />
                 </b-col>
                 <b-col md="7">
                     <b-card class="mb-4">
@@ -62,8 +63,10 @@ export default {
             query: QUERY_FOLLOWEE_TWEETS,
             variables() {
                 return {
-                    first: this.first,
-                    offset: this.offset
+                    pageRequest: {
+                        first: this.first,
+                        offset: this.offset
+                    }
                 }
             }
         },
@@ -76,8 +79,10 @@ export default {
         onScrolledToBottom() {
             this.$apollo.queries.followeeTweets.fetchMore({
                 variables: {
-                    first: this.first,
-                    offset: this.followeeTweets.length
+                    pageRequest: {
+                        first: this.first,
+                        offset: this.followeeTweets.length
+                    }
                 },
                 updateQuery: (previousResult, { fetchMoreResult }) => {
                     const oldTweets = previousResult.followeeTweets;
