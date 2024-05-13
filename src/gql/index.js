@@ -38,7 +38,7 @@ export const FRAGMENT_TWEET_DATA = gql`
         mentions {
             ...BasicUserData
         }
-        likedBy(pageRequest: { first: 2, offset: 0 }) {
+        likedBy(pageRequest: { first: 10, offset: 0 }) {
             ...BasicUserData
         }
         likedByMe
@@ -129,4 +129,13 @@ export const QUERY_FOLLOW_RECOMMENDATIONS = gql`
         }
     }
     ${FRAGMENT_BASIC_USER_DATA}
+`;
+
+export const QUERY_TOP_HASHTAG_OCCURRENCES = gql`
+    query($top: Int!) {
+        topHashtagOccurrences(top: $top) {
+            hashtagName
+            occurrences
+        }
+    }
 `;

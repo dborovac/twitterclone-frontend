@@ -1,5 +1,6 @@
 <template>
 	<div id="app">
+
 		<head>
 			<title>Twitter clone</title>
 		</head>
@@ -10,15 +11,16 @@
 				<b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
 				<b-collapse id="nav-collapse" is-nav>
+					<b-navbar-nav>
+						<b-nav-item>
+							<v-icon name="hi-solid-bell"></v-icon>
+							Notifications
+						</b-nav-item>
+					</b-navbar-nav>
 					<b-navbar-nav class="ml-auto">
 						<b-nav-form v-if="isAuthenticated()">
-							<vue-bootstrap-typeahead
-								ref="usersTypeahead"
-								:data="users"
-								v-model="searchQuery"
-								:serializer="u => u.handle"
-								placeholder="Find people you know"
-								prepend="@"
+							<vue-bootstrap-typeahead ref="usersTypeahead" :data="users" v-model="searchQuery"
+								:serializer="u => u.handle" placeholder="Find people you know" prepend="@"
 								@hit="onHit($event)">
 								<template slot="suggestion" slot-scope="{ htmlText, data }">
 									<div class="d-flex flex-row p-1">
@@ -33,11 +35,13 @@
 								</template>
 							</vue-bootstrap-typeahead>
 						</b-nav-form>
-						<b-nav-item v-if="isAuthenticated()" class="ml-3" :to="{ name: 'My profile' }">My profile</b-nav-item>
+						<b-nav-item v-if="isAuthenticated()" class="ml-3" :to="{ name: 'My profile' }">My
+							profile</b-nav-item>
 						<b-nav-item v-if="isAuthenticated()" @click="logout">Logout</b-nav-item>
 					</b-navbar-nav>
 				</b-collapse>
 			</b-container>
+
 		</b-navbar>
 
 		<router-view></router-view>
@@ -54,6 +58,16 @@
 import { logout, isAuthenticated } from '@/auth';
 import gql from 'graphql-tag';
 import _ from 'underscore';
+import { Client } from '@stomp/stompjs';
+
+const client = new Client({
+	brokerURL: 'ws://localhost:8080/ws',
+	onConnect: () => {
+		client.subscribe('/topic/follow-notifications', message => console.log(`Received: ${message.body}`));
+		client.publish({ destination: '/app/follows', body: "c69b1971-70f0-41ac-bf7e-900545bd3f3c" });
+	}
+});
+client.activate();
 
 const SEARCH_USERS_QUERY = gql`
 	query($searchQuery: String!) {
@@ -97,19 +111,20 @@ export default {
 		}
 	},
 	watch: {
-		searchQuery: _.debounce(function(val) { this.searchUsers(val) }, 500)
+		searchQuery: _.debounce(function (val) { this.searchUsers(val) }, 500)
 	}
 }
 </script>
 
 <style>
 body {
-  background: url("./assets/wave.svg") no-repeat center center fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+	background: url("./assets/wave.svg") no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
 }
+
 * {
 	font-family: "DM Sans", sans-serif;
 }

@@ -35,7 +35,7 @@ const LIKE_TWEET_MUTATION = gql`
 
 const LIKES_FRAGMENT = gql`
     fragment LikesFragment on Tweet {
-        likedBy(pageRequest: { first: 2, offset: 0 }) {
+        likedBy(pageRequest: { first: 10, offset: 0 }) {
             ...BasicUserData
         }
         likedByMe
@@ -46,7 +46,7 @@ const LIKES_FRAGMENT = gql`
 
 const LIKED_BY_FRAGMENT = gql`
     fragment LikedByFragment on Tweet {
-        likedBy(pageRequest: { first: 2, offset: 0 }) {
+        likedBy(pageRequest: { first: 10, offset: 0 }) {
             ...BasicUserData
         }
     }

@@ -1,7 +1,7 @@
 <template>
     <b-container>
         <b-card>
-            <h5 class="mb-4">People you may know</h5>
+            <h5 class="mb-4">Who to follow</h5>
             <div v-for="(obj, index) in recommendations" :key="index">
                 <div class="p-3 mb-2 border">
                     <CompactProfileInfo class="mb-1" :userId="obj.recommendation.id" size="md" withFollowButton />
