@@ -21,21 +21,11 @@
                         </b-card-header>
 
                         <b-card-body v-if="activeTab === 1">
-                            <div class="tweets-container" v-infinite-scroll="onScrolledToBottom" infinite-scroll-immediate-check="false">
-                                <div v-for="tweet in followeeTweets" :key="tweet.id">
-                                    <SingleTweet :tweet="tweet" />
-                                </div>
-                            </div>
-                            <div class="text-center" v-if="followeeTweets.length === 0">Nothing here</div>
+                            <TweetsContainer :tweets="followeeTweets" :tweetsQuery="this.$apollo.queries.followeeTweets" divOnly />
                         </b-card-body>
 
                         <b-card-body v-if="activeTab === 2">
-                            <div class="tweets-container">
-                                <div v-for="tweet in myProfile.tweets" :key="tweet.id">
-                                    <SingleTweet :tweet="tweet" />
-                                </div>
-                            </div>
-                            <div class="text-center" v-if="myProfile.tweets.length === 0">Nothing here</div>
+                            <TweetsContainer :tweets="myTweets" :tweetsQuery="this.$apollo.queries.myTweets" divOnly />
                         </b-card-body>
                     </b-card>
                 </b-col>
@@ -45,7 +35,7 @@
 </template>
 
 <script>
-import { QUERY_MYSELF, QUERY_FOLLOWEE_TWEETS } from '@/gql';
+import { QUERY_MYSELF, QUERY_FOLLOWEE_TWEETS, QUERY_MY_TWEETS } from '@/gql';
 
 export default {
     name: 'HomeView',
@@ -54,7 +44,7 @@ export default {
             myProfile: {},
             followeeTweets: [],
             activeTab: 1,
-            first: 5,
+            first: 10,
             offset: 0
         }
     },
@@ -73,55 +63,18 @@ export default {
         myProfile: {
             query: QUERY_MYSELF,
             update: data => data.getMyself
-        }
-    },
-    methods: {
-        onScrolledToBottom() {
-            this.$apollo.queries.followeeTweets.fetchMore({
-                variables: {
+        },
+        myTweets: {
+            query: QUERY_MY_TWEETS,
+            variables() {
+                return {
                     pageRequest: {
                         first: this.first,
-                        offset: this.followeeTweets.length
-                    }
-                },
-                updateQuery: (previousResult, { fetchMoreResult }) => {
-                    const oldTweets = previousResult.followeeTweets;
-                    const newTweets = fetchMoreResult.followeeTweets;
-                    return {
-                        followeeTweets: [...oldTweets, ...newTweets]
+                        offset: this.offset
                     }
                 }
-            })
+            }
         }
     }
 };
 </script>
-
-<style>
-.tweets-container {
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.tweets-container::-webkit-scrollbar {
-    display: none;
-}
-
-.tweets-container {
-    scrollbar-width: thin;
-    scrollbar-color: #ccc transparent;
-}
-
-.tweets-container::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
-}
-
-.tweets-container::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 10px;
-}
-
-.tweets-container::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
-}
-</style>

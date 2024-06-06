@@ -12,7 +12,7 @@
 
 				<b-collapse id="nav-collapse" is-nav>
 					<b-navbar-nav>
-						<b-nav-item>
+						<b-nav-item v-if="isAuthenticated()">
 							<v-icon name="hi-solid-bell"></v-icon>
 							Notifications
 						</b-nav-item>

@@ -112,7 +112,7 @@ export default {
                 query: gql`
                     query {
                         tweetById(id: "${this.tweet.id}") {
-                            likedBy(pageRequest: { first: 2, offset: ${this.tweet.likedBy.length} }) {
+                            likedBy(pageRequest: { first: 10, offset: ${this.tweet.likedBy.length} }) {
                                 ...BasicUserData
                             }
                         }

@@ -28,7 +28,7 @@
 
 <script>
 import gql from 'graphql-tag';
-import { QUERY_MYSELF, MUTATION_POST_TWEET } from '@/gql';
+import { MUTATION_POST_TWEET, QUERY_MY_TWEETS } from '@/gql';
 
 const SEARCH_USERS_BY_HANDLE_QUERY = gql`
     query($handle: String!) {
@@ -67,9 +67,9 @@ export default {
                     content: this.tweetText
                 },
                 update: (store, { data: { postTweet } }) => {
-                    let data = store.readQuery({ query: QUERY_MYSELF });
-                    data.getMyself.tweets.unshift(postTweet);
-                    store.writeQuery({ query: QUERY_MYSELF, data });
+                    let data = store.readQuery({ query: QUERY_MY_TWEETS, variables: { first: 5, offset: 0 } });
+                    data.myTweets.unshift(postTweet);
+                    store.writeQuery({ query: QUERY_MY_TWEETS, variables: { first: 5, offset: 0 }, data });
                 }
             }).then(() => this.tweetText = '');
         },

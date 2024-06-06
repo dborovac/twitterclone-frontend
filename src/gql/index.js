@@ -64,25 +64,35 @@ export const QUERY_USER_BY_ID = gql`
     query($userId: String!) {
         getUserById(userId: $userId) {
             ...UserData
-            tweets {
-                ...TweetData
-            }
         }
     }
     ${FRAGMENT_USER_DATA}
-    ${FRAGMENT_TWEET_DATA}
 `;
 
 export const QUERY_MYSELF = gql`
     query {
         getMyself {
             ...UserData
-            tweets {
-                ...TweetData
-            }
         }
     }
     ${FRAGMENT_USER_DATA}
+`;
+
+export const QUERY_MY_TWEETS = gql`
+    query($pageRequest: PageRequest!) {
+        myTweets(pageRequest: $pageRequest) {
+            ...TweetData
+        }
+    }
+    ${FRAGMENT_TWEET_DATA}
+`;
+
+export const QUERY_USER_TWEETS = gql`
+    query($userId: String!, $pageRequest: PageRequest!) {
+        userTweets(userId: $userId, pageRequest: $pageRequest) {
+            ...TweetData
+        }
+    }
     ${FRAGMENT_TWEET_DATA}
 `;
 

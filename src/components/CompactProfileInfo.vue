@@ -90,7 +90,11 @@ export default {
             query: QUERY_USER_BY_ID,
             variables() {
                 return {
-                    userId: this.userId
+                    userId: this.userId,
+                    pageRequest: {
+                        first: 5,
+                        offset: 0
+                    }
                 }
             },
             skip() {
@@ -146,9 +150,6 @@ export default {
                             __typename: __typename
                         }
                     });
-
-                    let followRecommendations = store.readQuery({ query: QUERY_FOLLOW_RECOMMENDATIONS, variables: { first: 5 } });
-                    console.log(followRecommendations);
                 }
             });
         },
